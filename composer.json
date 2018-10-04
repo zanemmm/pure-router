@@ -1,0 +1,27 @@
+{
+    "name": "zane/pure-router",
+    "description": "Just a simple router make your project clearify.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "zane",
+            "email": "pi@0php.net",
+            "homepage": "https://www.0php.net"
+        }
+    ],
+    "require": {
+        "php": "7.*",
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zane\\PureRouter\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
