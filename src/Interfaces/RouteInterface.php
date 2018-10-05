@@ -1,14 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zane
- * Date: 18-10-4
- * Time: 下午5:16
- */
 
 namespace Zane\PureRouter\Interfaces;
 
 use Psr\Http\Message\RequestInterface;
+use Zane\PureRouter\Parameters\AbstractParameter;
 
 interface RouteInterface
 {
@@ -20,7 +15,9 @@ interface RouteInterface
 
     public function name(string $name = null): self;
 
-    public function getParams(array $params): array;
+    public function getRequest(): ?RequestInterface;
 
-    public function getParam(string $name);
+    public function getParameters(array $params = []): array;
+
+    public function getParameter(string $name): AbstractParameter;
 }

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zane
- * Date: 18-10-4
- * Time: 下午5:14
- */
 
 namespace Zane\PureRouter\Interfaces;
 
@@ -14,7 +8,7 @@ interface RouteGroupInterface
 {
     public function addRoute(RouteInterface $route): RouteInterface;
 
-    public function middleware(...$middleware): self;
+    public function middleware(string ...$middleware): self;
 
     public function match(RequestInterface $request): bool;
 }

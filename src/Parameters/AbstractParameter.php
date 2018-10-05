@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: zane
- * Date: 18-10-4
- * Time: 下午10:56
- */
 
-namespace Zane\PureRouter\Params;
+namespace Zane\PureRouter\Parameters;
 
 use Closure;
 
-abstract class AbstractParam
+abstract class AbstractParameter
 {
     /**
      * @var string $name
@@ -32,7 +26,7 @@ abstract class AbstractParam
      */
     protected static $binds = [];
 
-    public function __construct(string $name)
+    public function __construct(?string $name)
     {
         $this->name = $name;
     }
@@ -69,5 +63,5 @@ abstract class AbstractParam
         static::$binds[$name] = $fn;
     }
 
-    abstract public function match(string $param): bool;
+    abstract public function match(string $uriSegment): bool;
 }
