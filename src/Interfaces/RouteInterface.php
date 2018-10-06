@@ -11,13 +11,13 @@ interface RouteInterface
 
     public function match(RequestInterface $request): bool;
 
-    public function url(array $params = []): string;
+    public function url(array $parameter = []): string;
 
-    public function name(string $name = null): self;
+    public function name(string $name = null);
 
     public function getRequest(): ?RequestInterface;
 
-    public function getParameters(array $params = []): array;
+    public function getParameters(array $parameter = []): array;
 
     public function getParameter(string $name): AbstractParameter;
 }

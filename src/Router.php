@@ -10,9 +10,14 @@ use Zane\PureRouter\Interfaces\RouteGroupInterface;
 use Zane\PureRouter\Interfaces\RouteInterface;
 use Zane\PureRouter\Interfaces\RouterInterface;
 use Zane\PureRouter\Parameters\AbstractParameter;
+use Zane\PureRouter\Parameters\AnyParameter;
 
 class Router implements RouterInterface
 {
+    protected static $parameters = [
+        'any' => AnyParameter::class
+    ];
+
     public function get(string $pattern, $action): RouteInterface
     {
         // TODO: Implement get() method.
@@ -68,9 +73,13 @@ class Router implements RouterInterface
         // TODO: Implement getRoute() method.
     }
 
-    public static function getParameter(string $type): AbstractParameter
+    public static function getParameter(string $type, string $name): AbstractParameter
     {
-        // TODO: Implement getParameter() method.
+        if (!isset(static::$parameters[$type])) {
+            // TODO: throw a exception
+        }
+
+        return new static::$parameters[$type]($name);
     }
 
     public static function getMiddleware(string $name): MiddlewareInterface

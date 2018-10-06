@@ -32,7 +32,7 @@ interface RouterInterface
 
     public function getRoute(string $name): RouteInterface;
 
-    public static function getParameter(string $type): AbstractParameter;
+    public static function getParameter(string $type, string $name): AbstractParameter;
 
     public static function getMiddleware(string $name): MiddlewareInterface;
 
