@@ -34,6 +34,10 @@ interface RouterInterface
 
     public static function getParameter(string $type, string $name): AbstractParameter;
 
+    public static function getDefaultParameter(string $name): AbstractParameter;
+
+    public static function setDefaultParameter(string $type): void;
+
     public static function getMiddleware(string $name): MiddlewareInterface;
 
     public static function extendParameter(string $type, string $parameterClassName): void;

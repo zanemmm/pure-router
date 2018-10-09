@@ -3,6 +3,7 @@ namespace Zane\Tests;
 
 use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\TestCase;
+use Zane\PureRouter\Exceptions\RouteUrlParameterMatchException;
 use Zane\PureRouter\Route;
 
 class RouteTest extends TestCase
@@ -19,17 +20,32 @@ class RouteTest extends TestCase
 
     public function testUrl()
     {
+        $route = $this->getRoute('GET', '/', 'nothing');
+        $url = $route->url();
+        $this->assertEquals('/', $url);
+
+        $route = $this->getRoute('GET', '', 'nothing');
+        $url = $route->url();
+        $this->assertEquals('/', $url);
+
         $route = $this->getRoute('GET', '/hello/world', 'nothing');
         $url = $route->url();
         $this->assertEquals('/hello/world', $url);
 
-        $route = $this->getRoute('GET', '/hello/:any|world', 'nothing');
+        $route = $this->getRoute('GET', '/hello/:world|any', 'nothing');
         $url = $route->url(['world' => 'better']);
         $this->assertEquals('/hello/better', $url);
 
-        $route = $this->getRoute('GET', '/hello/:|', 'nothing');
-        $url = $route->url();
-        $this->assertEquals('/hello/:|', $url);
+        $route = $this->getRoute('GET', '/hello/:id|num', 'nothing');
+        $url = $route->url(['id' => '9527']);
+        $this->assertEquals('/hello/9527', $url);
+        // Test parameter not match exception
+        try {
+            $route->url(['id' => 'notNumber']);
+        } catch (RouteUrlParameterMatchException $e) {
+            return;
+        }
+        $this->fail("Not throw RouteUrlParameterMatchException!");
     }
 
     public function testGetParameters()

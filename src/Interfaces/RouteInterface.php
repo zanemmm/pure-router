@@ -15,9 +15,15 @@ interface RouteInterface
 
     public function name(string $name = null);
 
+    public function get(array $names = []);
+
+    public function middleware(array $names = []);
+
     public function getRequest(): ?RequestInterface;
 
-    public function getParameters(array $parameter = []): array;
+    public function setRequest(RequestInterface $request): self;
 
-    public function getParameter(string $name): AbstractParameter;
+    public function getParameters(array $names = []): array;
+
+    public function getParameter(string $name): ?AbstractParameter;
 }
