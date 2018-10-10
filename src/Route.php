@@ -4,7 +4,7 @@ namespace Zane\PureRouter;
 
 use Psr\Http\Message\RequestInterface;
 use Zane\PureRouter\Exceptions\RoutePatternException;
-use Zane\PureRouter\Exceptions\RouteUrlParameterMatchException;
+use Zane\PureRouter\Exceptions\RouteUrlParameterNotMatchException;
 use Zane\PureRouter\Interfaces\RouteInterface;
 use Zane\PureRouter\Parameters\AbstractParameter;
 
@@ -30,7 +30,7 @@ class Route implements RouteInterface
 
     protected $parameters = [];
 
-    public function __construct(string $method, string $pattern, $action)
+    public function __construct(string $method, string $pattern, callable $action)
     {
         $this->method  = $method;
         $this->pattern = $pattern;
@@ -150,7 +150,7 @@ class Route implements RouteInterface
                 $value = $parameters[$segment->name()] ?? null;
                 // Throw exception when parameter value is null or not match.
                 if (is_null($value) || !$segment->match($value)) {
-                    throw new RouteUrlParameterMatchException($segment->name());
+                    throw new RouteUrlParameterNotMatchException($segment->name());
                 }
 
                 return $value;
@@ -222,24 +222,18 @@ class Route implements RouteInterface
 
 
     /**
-     * Get HTTP request.
+     * Get or set HTTP request.
      *
-     * @return null|RequestInterface
+     * @param RequestInterface $request|null
+     *
+     * @return null|RequestInterface|RouteInterface
      */
-    public function getRequest(): ?RequestInterface
+    public function request(RequestInterface $request = null)
     {
-        return $this->request;
-    }
+        if (is_null($request)) {
+            return $this->request;
+        }
 
-    /**
-     * Set HTTP request.
-     *
-     * @param RequestInterface $request
-     *
-     * @return RouteInterface
-     */
-    public function setRequest(RequestInterface $request): RouteInterface
-    {
         $this->request = $request;
 
         return $this;

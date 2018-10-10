@@ -3,49 +3,56 @@ namespace Zane\Tests;
 
 use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\TestCase;
-use Zane\PureRouter\Exceptions\RouteUrlParameterMatchException;
 use Zane\PureRouter\Route;
 
 class RouteTest extends TestCase
 {
-    protected function getRequest($method, $uri, array $headers = [], $body = null, $version = '1.1')
+    protected function getRequest($uri, $method = 'GET', array $headers = [], $body = null, $version = '1.1')
     {
         return new Request($method, $uri, $headers, $body, $version);
     }
 
-    protected function getRoute($method, $pattern, $action)
+    protected function getRoute($pattern, $method = 'GET', $action = null)
     {
+        if (is_null($action)) {
+            $action = function () {
+                return 'hello world!';
+            };
+        }
+
         return new Route($method, $pattern, $action);
     }
 
     public function testUrl()
     {
-        $route = $this->getRoute('GET', '/', 'nothing');
+        $route = $this->getRoute('/');
         $url = $route->url();
         $this->assertEquals('/', $url);
 
-        $route = $this->getRoute('GET', '', 'nothing');
+        $route = $this->getRoute('');
         $url = $route->url();
         $this->assertEquals('/', $url);
 
-        $route = $this->getRoute('GET', '/hello/world', 'nothing');
+        $route = $this->getRoute('/hello/world');
         $url = $route->url();
         $this->assertEquals('/hello/world', $url);
 
-        $route = $this->getRoute('GET', '/hello/:world|any', 'nothing');
+        $route = $this->getRoute('/hello/:world|any');
         $url = $route->url(['world' => 'better']);
         $this->assertEquals('/hello/better', $url);
 
-        $route = $this->getRoute('GET', '/hello/:id|num', 'nothing');
+        $route = $this->getRoute('/hello/:id|num');
         $url = $route->url(['id' => '9527']);
         $this->assertEquals('/hello/9527', $url);
-        // Test parameter not match exception
-        try {
-            $route->url(['id' => 'notNumber']);
-        } catch (RouteUrlParameterMatchException $e) {
-            return;
-        }
-        $this->fail("Not throw RouteUrlParameterMatchException!");
+    }
+
+    /**
+     * @expectedException Zane\PureRouter\Exceptions\RouteUrlParameterNotMatchException
+     */
+    public function testRouteUrlParameterNotMatch()
+    {
+        $route = $this->getRoute('/hello/:id|num');
+        $route->url(['id' => 'notNumber']);
     }
 
     public function testGetParameters()
@@ -54,52 +61,52 @@ class RouteTest extends TestCase
 
     public function testMatch()
     {
-        $route   = $this->getRoute('GET', '/', 'nothing');
-        $request = $this->getRequest('GET', '/');
+        $route   = $this->getRoute('/');
+        $request = $this->getRequest('/');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', '/', 'nothing');
-        $request = $this->getRequest('GET', '');
+        $route   = $this->getRoute('/');
+        $request = $this->getRequest('');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', '', 'nothing');
-        $request = $this->getRequest('GET', '/');
+        $route   = $this->getRoute('');
+        $request = $this->getRequest('/');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', '', 'nothing');
-        $request = $this->getRequest('GET', '');
+        $route   = $this->getRoute('');
+        $request = $this->getRequest('');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', '/hello', 'nothing');
-        $request = $this->getRequest('GET', '/hello');
+        $route   = $this->getRoute('/hello');
+        $request = $this->getRequest('/hello');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', 'hello/', 'nothing');
-        $request = $this->getRequest('GET', '/hello');
+        $route   = $this->getRoute('hello/');
+        $request = $this->getRequest('/hello');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', '/hello', 'nothing');
-        $request = $this->getRequest('GET', 'hello/');
+        $route   = $this->getRoute('/hello');
+        $request = $this->getRequest('hello/');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', 'hello', 'nothing');
-        $request = $this->getRequest('GET', 'hello');
+        $route   = $this->getRoute('hello');
+        $request = $this->getRequest('hello');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', '/hello/world', 'nothing');
-        $request = $this->getRequest('GET', '/hello/world');
+        $route   = $this->getRoute('/hello/world');
+        $request = $this->getRequest('/hello/world');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('GET', '/hello', 'nothing');
-        $request = $this->getRequest('GET', '/world');
+        $route   = $this->getRoute('/hello');
+        $request = $this->getRequest('/world');
         $this->assertFalse($route->match($request));
 
-        $route   = $this->getRoute('GET', '/hello', 'nothing');
-        $request = $this->getRequest('GET', '/hello/world');
+        $route   = $this->getRoute('/hello');
+        $request = $this->getRequest('/hello/world');
         $this->assertFalse($route->match($request));
 
-        $route   = $this->getRoute('GET', '/hello/world', 'nothing');
-        $request = $this->getRequest('GET', '/world');
+        $route   = $this->getRoute('/hello/world');
+        $request = $this->getRequest('/world');
         $this->assertFalse($route->match($request));
     }
 
