@@ -2,13 +2,17 @@
 
 namespace Zane\PureRouter\Interfaces;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface RouteGroupInterface
 {
-    public function addRoute(RouteInterface $route): RouteInterface;
+    public function __construct(string $prefix);
 
-    public function middleware(string ...$middleware): self;
+    public function addRoute(array $methods, string $pattern, $action): RouteInterface;
 
-    public function match(RequestInterface $request): bool;
+    public function middleware(array $middleware): self;
+
+    public function match(ServerRequestInterface $request): bool;
+
+    public function findMatchRoute(ServerRequestInterface $request): ?RouteInterface;
 }

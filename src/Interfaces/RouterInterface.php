@@ -3,9 +3,9 @@
 namespace Zane\PureRouter\Interfaces;
 
 use Closure;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Zane\PureRouter\Parameters\AbstractParameter;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 interface RouterInterface
@@ -28,9 +28,9 @@ interface RouterInterface
 
     public function group(string $prefix, Closure $fn): RouteGroupInterface;
 
-    public function dispatch(RequestInterface $request): ResponseInterface;
+    public function dispatch(ServerRequestInterface $request): ?ResponseInterface;
 
-    public function getRoute(string $name): RouteInterface;
+    public function getRoute(string $name): ?RouteInterface;
 
     public static function getParameter(string $type, string $name): AbstractParameter;
 

@@ -2,7 +2,8 @@
 
 namespace Zane\PureRouter;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Zane\PureRouter\Exceptions\RoutePatternException;
 use Zane\PureRouter\Exceptions\RouteUrlParameterNotMatchException;
 use Zane\PureRouter\Interfaces\RouteInterface;
@@ -10,7 +11,7 @@ use Zane\PureRouter\Parameters\AbstractParameter;
 
 class Route implements RouteInterface
 {
-    const PARAMETER_HEAD      = ':';
+    const PARAMETER_HEAD      = '$';
 
     const PARAMETER_SEPARATOR = '|';
 
@@ -18,7 +19,7 @@ class Route implements RouteInterface
 
     protected $name;
 
-    protected $method;
+    protected $methods;
 
     protected $pattern;
 
@@ -30,9 +31,9 @@ class Route implements RouteInterface
 
     protected $parameters = [];
 
-    public function __construct(string $method, string $pattern, callable $action)
+    public function __construct(array $methods, string $pattern, RequestHandlerInterface $action)
     {
-        $this->method  = $method;
+        $this->methods = $methods;
         $this->pattern = $pattern;
         $this->action  = $action;
     }
@@ -40,13 +41,13 @@ class Route implements RouteInterface
     /**
      * Check route and request match.
      *
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      *
      * @return bool
      */
-    public function match(RequestInterface $request): bool
+    public function match(ServerRequestInterface $request): bool
     {
-        if ($this->method !== $request->getMethod()) {
+        if (!in_array($request->getMethod(), $this->methods)) {
             return false;
         }
 
@@ -88,7 +89,7 @@ class Route implements RouteInterface
                 // Get name and type from parameter information.
                 if (count($parameterInfo) == 2) {
                     [$name, $type] = $parameterInfo;
-                } elseif (count($parameterInfo) == 1) {
+                } elseif (!empty($parameterInfo[0])) {
                     $name = $parameterInfo[0];
                     $type = null;
                 } else {
@@ -181,14 +182,18 @@ class Route implements RouteInterface
     /**
      * Get parameter value.
      *
-     * @param string[] $names
+     * @param string|string[] $names
      *
      * @return AbstractParameter|AbstractParameter[]
      */
-    public function get(array $names = [])
+    public function get($names = [])
     {
-        if (count($names) === 1) {
+        if (is_string($names)) {
             return $this->getParameter($names)->value();
+        }
+
+        if (!is_array($names)) {
+            return [];
         }
 
         if (empty($names)) {
@@ -200,6 +205,17 @@ class Route implements RouteInterface
         return array_map(function (AbstractParameter $parameter) {
             return $parameter->value();
         }, $parameters);
+    }
+
+    public function action(RequestHandlerInterface $handler = null)
+    {
+        if (is_null($handler)) {
+            return $this->action;
+        }
+
+        $this->action = $handler;
+
+        return $this;
     }
 
     /**
@@ -215,7 +231,7 @@ class Route implements RouteInterface
             return $this->middleware;
         }
 
-        array_merge($this->middleware, $names);
+        $this->middleware = array_merge($this->middleware, $names);
 
         return $this;
     }
@@ -224,11 +240,11 @@ class Route implements RouteInterface
     /**
      * Get or set HTTP request.
      *
-     * @param RequestInterface $request|null
+     * @param ServerRequestInterface $request|null
      *
-     * @return null|RequestInterface|RouteInterface
+     * @return ServerRequestInterface|RouteInterface|null
      */
-    public function request(RequestInterface $request = null)
+    public function request(ServerRequestInterface $request = null)
     {
         if (is_null($request)) {
             return $this->request;
