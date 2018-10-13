@@ -10,7 +10,7 @@ interface RouteGroupInterface
 
     public function addRoute(array $methods, string $pattern, $action): RouteInterface;
 
-    public function middleware(array $middleware): self;
+    public function middleware(array $names = []);
 
     public function match(ServerRequestInterface $request): bool;
 

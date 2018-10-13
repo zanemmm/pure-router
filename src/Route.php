@@ -2,36 +2,64 @@
 
 namespace Zane\PureRouter;
 
+use Closure;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zane\PureRouter\Exceptions\RoutePatternException;
+use Zane\PureRouter\Exceptions\RouteResolveActionException;
 use Zane\PureRouter\Exceptions\RouteUrlParameterNotMatchException;
 use Zane\PureRouter\Interfaces\RouteInterface;
 use Zane\PureRouter\Parameters\AbstractParameter;
 
 class Route implements RouteInterface
 {
+    const ACTION_SEPARATOR    = '@';
+
     const PARAMETER_HEAD      = '$';
 
     const PARAMETER_SEPARATOR = '|';
 
+    /**
+     * @var null|ServerRequestInterface
+     */
     protected $request = null;
 
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var string[]
+     */
     protected $methods;
 
+    /**
+     * @var string
+     */
     protected $pattern;
 
+    /**
+     * @var array
+     */
     protected $segments;
 
+    /**
+     * @var RequestHandlerInterface
+     */
     protected $action;
 
+    /**
+     * @var string[]
+     */
     protected $middleware = [];
 
+    /**
+     * @var array
+     */
     protected $parameters = [];
 
-    public function __construct(array $methods, string $pattern, RequestHandlerInterface $action)
+    public function __construct(array $methods, string $pattern, $action)
     {
         $this->methods = $methods;
         $this->pattern = $pattern;
@@ -163,11 +191,11 @@ class Route implements RouteInterface
     }
 
     /**
-     * Get or set name of route.
+     * Get or set name.
      *
      * @param string|null $name
      *
-     * @return $this
+     * @return $this|string
      */
     public function name(string $name = null)
     {
@@ -207,19 +235,65 @@ class Route implements RouteInterface
         }, $parameters);
     }
 
-    public function action(RequestHandlerInterface $handler = null)
+    /**
+     * Get or set action.
+     *
+     * @param null|string|RequestHandlerInterface $action
+     *
+     * @return $this|RequestHandlerInterface
+     *
+     * @throws RouteResolveActionException
+     */
+    public function action($action = null)
     {
-        if (is_null($handler)) {
-            return $this->action;
+        if (is_null($action)) {
+            if ($this->action instanceof RequestHandlerInterface) {
+                return $this->action;
+            }
+
+            return $this->resolveAction();
         }
 
-        $this->action = $handler;
+        $this->action = $action;
 
         return $this;
     }
 
     /**
-     * Get or set middleware
+     * Make the action to ActionHandler.
+     *
+     * @return ActionHandler
+     *
+     * @throws RouteResolveActionException
+     */
+    protected function resolveAction(): ActionHandler
+    {
+        if (is_callable($this->action)) {
+            $fn = Closure::fromCallable($this->action);
+            $this->action = new ActionHandler($fn, $this);
+
+            return $this->action;
+        }
+
+        if (is_string($this->action)) {
+            $actionInfo = explode(self::ACTION_SEPARATOR, $this->action);
+            if (count($actionInfo) !== 2) {
+                // can't parse action string
+                throw new RouteResolveActionException($this->pattern);
+            }
+
+            $fn = Closure::fromCallable([new $actionInfo[0], $actionInfo[1]]);
+            $this->action = new ActionHandler($fn, $this);
+
+            return $this->action;
+        }
+
+        // Action type wrong.
+        throw new RouteResolveActionException($this->pattern);
+    }
+
+    /**
+     * Get or set middleware.
      *
      * @param array $names
      *

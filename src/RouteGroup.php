@@ -8,6 +8,9 @@ use Zane\PureRouter\Interfaces\RouteInterface;
 
 class RouteGroup implements RouteGroupInterface
 {
+    /**
+     * @var string
+     */
     protected $prefix;
 
     /**
@@ -43,17 +46,36 @@ class RouteGroup implements RouteGroupInterface
         return $route;
     }
 
-    public function middleware(array $middleware): RouteGroupInterface
+
+    /**
+     * Get or append middleware.
+     *
+     * @param array $names
+     *
+     * @return string[]|RouteGroupInterface
+     */
+    public function middleware(array $names = [])
     {
+        if (empty($middleware)) {
+            return $this->middleware;
+        }
+
         $this->middleware = array_merge($this->middleware, $middleware);
 
         return $this;
     }
 
+    /**
+     * Check whether the request matches the group by prefix.
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return bool
+     */
     public function match(ServerRequestInterface $request): bool
     {
-        $prefix = '/' . trim($this->prefix, '/');
-        $uri    = '/' . trim($request->getUri(), '/');
+        $prefix = '/' . trim($this->prefix, '/') . '/';
+        $uri    = '/' . trim($request->getUri(), '/') . '/';
 
         if (strpos($uri, $prefix) !== 0) {
             return false;
@@ -62,6 +84,13 @@ class RouteGroup implements RouteGroupInterface
         return true;
     }
 
+    /**
+     * Find the route that matches request.
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return RouteInterface|null
+     */
     public function findMatchRoute(ServerRequestInterface $request): ?RouteInterface
     {
         // Filter routes by method.
@@ -71,7 +100,7 @@ class RouteGroup implements RouteGroupInterface
             if ($route->match($request)) {
                 // Set request to route.
                 $route->request($request);
-                // Set middleware to route
+                // Set group middleware to route
                 $route->middleware($this->middleware);
 
                 return $route;

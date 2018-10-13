@@ -3,10 +3,12 @@ namespace Zane\Tests;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
+use Zane\PureRouter\ActionHandler;
 use Zane\PureRouter\Interfaces\RouteInterface;
 use Zane\PureRouter\Parameters\AnyParameter;
 use Zane\PureRouter\Parameters\NumberParameter;
 use Zane\PureRouter\Route;
+use Zane\PureRouter\Router;
 use Zane\Tests\Stubs\HelloAction;
 use Zane\Tests\Stubs\WorldAction;
 
@@ -251,5 +253,37 @@ class RouteTest extends TestCase
 
         $route->action($action);
         $this->assertEquals($action, $route->action());
+
+        // test closure action
+        $closureRoute = $this->getRoute('/', 'GET', function () {
+            return 'GG';
+        });
+        $this->assertInstanceOf(ActionHandler::class, $closureRoute->action());
+
+        // test callable action
+        $callableRoute = $this->getRoute('/', 'GET', [Router::class, 'extendParameter']);
+        $this->assertInstanceOf(ActionHandler::class, $callableRoute->action());
+
+        // test string action
+        $stringRoute = $this->getRoute('/', 'GET', 'Zane\Tests\Stubs\TestController@index');
+        $this->assertInstanceOf(ActionHandler::class, $stringRoute->action());
+    }
+
+    /**
+     * @expectedException \Zane\PureRouter\Exceptions\RouteResolveActionException
+     */
+    public function testWrongStringAction()
+    {
+        $stringRoute = $this->getRoute('/', 'GET', 'zane|index');
+        $stringRoute->action();
+    }
+
+    /**
+     * @expectedException \Zane\PureRouter\Exceptions\RouteResolveActionException
+     */
+    public function testWrongTypeAction()
+    {
+        $route = $this->getRoute('/', 'GET', []);
+        $route->action();
     }
 }

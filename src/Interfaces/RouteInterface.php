@@ -8,7 +8,7 @@ use Zane\PureRouter\Parameters\AbstractParameter;
 
 interface RouteInterface
 {
-    public function __construct(array $methods, string $pattern, RequestHandlerInterface $action);
+    public function __construct(array $methods, string $pattern, $action);
 
     public function match(ServerRequestInterface $request): bool;
 
@@ -18,7 +18,7 @@ interface RouteInterface
 
     public function get($names = []);
 
-    public function action(RequestHandlerInterface $handler = null);
+    public function action($action = null);
 
     public function middleware(array $names = []);
 
