@@ -27,6 +27,34 @@ class RouterTest extends TestCase
         $this->assertEquals("hello,hello,world", $response->getBody()->getContents());
     }
 
+    public function testAddRoute()
+    {
+        $router = new Router();
+        $route = $router->get('/', 'hello');
+        $this->assertEquals(['GET'], $route->methods());
+
+        $route = $router->post('/', 'hello');
+        $this->assertEquals(['POST'], $route->methods());
+
+        $route = $router->put('/', 'hello');
+        $this->assertEquals(['PUT'], $route->methods());
+
+        $route = $router->patch('/', 'hello');
+        $this->assertEquals(['PATCH'], $route->methods());
+
+        $route = $router->delete('/', 'hello');
+        $this->assertEquals(['DELETE'], $route->methods());
+
+        $route = $router->options('/', 'hello');
+        $this->assertEquals(['OPTIONS'], $route->methods());
+
+        $route = $router->any('/', 'hello');
+        $this->assertEquals(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $route->methods());
+
+        $route = $router->match(['GET', 'POST'], '/', 'hello');
+        $this->assertEquals(['GET', 'POST'], $route->methods());
+    }
+
     public function testGetParameter()
     {
         $this->assertInstanceOf(AnyParameter::class, Router::getParameter('any', 'test'));

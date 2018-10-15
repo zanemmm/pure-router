@@ -18,6 +18,8 @@ interface RouteInterface
 
     public function get($names = []);
 
+    public function methods(array $methods = []);
+
     public function action($action = null);
 
     public function middleware(array $names = []);

@@ -236,6 +236,25 @@ class Route implements RouteInterface
     }
 
     /**
+     * Get or set methods.
+     *
+     * @param string[] $methods
+     *
+     * @return $this|string[]
+     */
+    public function methods(array $methods = [])
+    {
+        if (empty($methods)) {
+            return $this->methods;
+        }
+
+        $this->methods = $methods;
+
+        return $this;
+    }
+
+
+    /**
      * Get or set action.
      *
      * @param null|string|RequestHandlerInterface $action

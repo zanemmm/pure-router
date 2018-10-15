@@ -245,6 +245,15 @@ class RouteTest extends TestCase
         $this->assertEquals($request, $route->request());
     }
 
+    public function testMethods()
+    {
+        $route = $this->getRoute('/');
+        $this->assertEquals(['GET'], $route->methods());
+
+        $route->methods(['POST']);
+        $this->assertEquals(['POST'], $route->methods());
+    }
+
     public function testAction()
     {
         $route = $this->getRoute('/');
