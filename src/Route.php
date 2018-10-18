@@ -329,25 +329,6 @@ class Route implements RouteInterface
         return $this;
     }
 
-
-    /**
-     * Get or set HTTP request.
-     *
-     * @param ServerRequestInterface $request|null
-     *
-     * @return ServerRequestInterface|RouteInterface|null
-     */
-    public function request(ServerRequestInterface $request = null)
-    {
-        if (is_null($request)) {
-            return $this->request;
-        }
-
-        $this->request = $request;
-
-        return $this;
-    }
-
     /**
      * Get parameter instances array by name.
      *

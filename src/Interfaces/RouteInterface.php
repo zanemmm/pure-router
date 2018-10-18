@@ -24,8 +24,6 @@ interface RouteInterface
 
     public function middleware(array $names = []);
 
-    public function request(ServerRequestInterface $request = null);
-
     public function getParameters(array $names = []): array;
 
     public function getParameter(string $name): ?AbstractParameter;

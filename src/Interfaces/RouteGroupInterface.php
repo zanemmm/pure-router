@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 interface RouteGroupInterface
 {
-    public function __construct(string $prefix);
+    public function __construct(string $prefix = '/', string $namespace = '/');
 
     public function addRoute(array $methods, string $pattern, $action): RouteInterface;
 

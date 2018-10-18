@@ -18,13 +18,17 @@ class RouterTest extends TestCase
         $router = new Router();
         Router::extendMiddleware('hello', HelloMiddleware::class);
         Router::extendMiddleware('world', WorldMiddleware::class);
-        $route = $router->get('/', new HelloAction())->middleware(['hello', 'world']);
 
-        $this->assertEquals(['hello', 'world'], $route->middleware());
-
+        $router->get('/', new HelloAction())->middleware(['hello', 'world']);
         $response = $router->dispatch(new ServerRequest('GET', '/'));
+        $this->assertEquals("hello,world,hello", $response->getBody()->getContents());
 
-        $this->assertEquals("hello,hello,world", $response->getBody()->getContents());
+        $router->post('/hello', new HelloAction());
+        $response = $router->dispatch(new ServerRequest('POST', '/hello'));
+        $this->assertEquals("hello", $response->getBody()->getContents());
+
+        $response = $router->dispatch(new ServerRequest('POST', '/world'));
+        $this->assertNull($response);
     }
 
     public function testAddRoute()

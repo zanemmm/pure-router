@@ -14,6 +14,11 @@ class RouteGroup implements RouteGroupInterface
     protected $prefix;
 
     /**
+     * @var string
+     */
+    protected $namespace;
+
+    /**
      * @var RouteInterface[][]
      */
     protected $routes = [
@@ -29,14 +34,19 @@ class RouteGroup implements RouteGroupInterface
      */
     protected $middleware = [];
 
-    public function __construct(string $prefix)
+    public function __construct(string $prefix = '/', string $namespace = '/')
     {
-        $this->prefix = $prefix;
+        $this->prefix    = $prefix;
+        $this->namespace = $namespace;
     }
 
     public function addRoute(array $methods, string $pattern, $action): RouteInterface
     {
         $pattern = trim($this->prefix, '/') . '/' . trim($pattern, '/');
+
+        if (is_string($action)) {
+            $action = rtrim($this->namespace, '/') . '/' . ltrim($action, '/');
+        }
 
         $route = new Route($methods, $pattern, $action);
         foreach ($methods as $method) {
@@ -56,11 +66,11 @@ class RouteGroup implements RouteGroupInterface
      */
     public function middleware(array $names = [])
     {
-        if (empty($middleware)) {
+        if (empty($names)) {
             return $this->middleware;
         }
 
-        $this->middleware = array_merge($this->middleware, $middleware);
+        $this->middleware = array_merge($this->middleware, $names);
 
         return $this;
     }
@@ -74,6 +84,10 @@ class RouteGroup implements RouteGroupInterface
      */
     public function match(ServerRequestInterface $request): bool
     {
+        if ($this->prefix === '/') {
+            return true;
+        }
+
         $prefix = '/' . trim($this->prefix, '/') . '/';
         $uri    = '/' . trim($request->getUri(), '/') . '/';
 
@@ -98,11 +112,6 @@ class RouteGroup implements RouteGroupInterface
 
         foreach ($routes as $route) {
             if ($route->match($request)) {
-                // Set request to route.
-                $route->request($request);
-                // Set group middleware to route
-                $route->middleware($this->middleware);
-
                 return $route;
             }
         }

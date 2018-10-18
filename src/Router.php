@@ -113,7 +113,7 @@ class Router implements RouterInterface
             if ($routeGroup->match($request)) {
                 $route = $routeGroup->findMatchRoute($request);
                 if ($route instanceof RouteInterface) {
-                    return $this->resolveMiddleware($route)->handle($request);
+                    return $this->resolveMiddleware($route, $routeGroup)->handle($request);
                 }
             }
         }
@@ -121,9 +121,9 @@ class Router implements RouterInterface
         return static::$notFoundResponse;
     }
 
-    protected function resolveMiddleware(RouteInterface $route): RequestHandlerInterface
+    protected function resolveMiddleware(RouteInterface $route, RouteGroupInterface $group): RequestHandlerInterface
     {
-        $middleware = array_reverse($route->middleware());
+        $middleware = array_reverse(array_merge($group->middleware(), $route->middleware()));
         if (empty($middleware)) {
             return $route->action();
         }
@@ -134,7 +134,7 @@ class Router implements RouterInterface
             $middlewareInstances[] = static::getMiddleware($item);
         }
 
-        $next = new MiddlewareHandler(array_pop($middlewareInstances), $route->action());
+        $next = new MiddlewareHandler(array_shift($middlewareInstances), $route->action());
         foreach ($middlewareInstances as $instance) {
             $next = new MiddlewareHandler($instance, $next);
         }

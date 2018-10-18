@@ -235,16 +235,6 @@ class RouteTest extends TestCase
         $this->assertEquals('world', $route->name());
     }
 
-    public function testRequest()
-    {
-        $route = $this->getRoute('/');
-        $this->assertNull($route->request());
-
-        $request = $this->getRequest('/');
-        $route->request($request);
-        $this->assertEquals($request, $route->request());
-    }
-
     public function testMethods()
     {
         $route = $this->getRoute('/');
