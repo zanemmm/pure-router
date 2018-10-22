@@ -25,7 +25,7 @@ class RouteTest extends TestCase
             $action = new HelloAction();
         }
 
-        return new Route([$method], $pattern, $action);
+        return new Route([$method], $pattern, $action, new Router());
     }
 
     public function testUrl()

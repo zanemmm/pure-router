@@ -5,6 +5,7 @@ namespace Zane\PureRouter;
 use Psr\Http\Message\ServerRequestInterface;
 use Zane\PureRouter\Interfaces\RouteGroupInterface;
 use Zane\PureRouter\Interfaces\RouteInterface;
+use Zane\PureRouter\Interfaces\RouterInterface;
 
 class RouteGroup implements RouteGroupInterface
 {
@@ -34,28 +35,27 @@ class RouteGroup implements RouteGroupInterface
      */
     protected $middleware = [];
 
-    public function __construct(string $prefix = '/', string $namespace = '/')
+    public function __construct(string $prefix = '/', string $namespace = '\\')
     {
         $this->prefix    = $prefix;
         $this->namespace = $namespace;
     }
 
-    public function addRoute(array $methods, string $pattern, $action): RouteInterface
+    public function addRoute(array $methods, string $pattern, $action, RouterInterface $router): RouteInterface
     {
         $pattern = trim($this->prefix, '/') . '/' . trim($pattern, '/');
 
         if (is_string($action)) {
-            $action = rtrim($this->namespace, '/') . '/' . ltrim($action, '/');
+            $action = rtrim($this->namespace, '\\') . '\\' . ltrim($action, '\\');
         }
 
-        $route = new Route($methods, $pattern, $action);
+        $route = new Route($methods, $pattern, $action, $router);
         foreach ($methods as $method) {
             $this->routes[$method][] = $route;
         }
 
         return $route;
     }
-
 
     /**
      * Get or append middleware.

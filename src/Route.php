@@ -9,6 +9,7 @@ use Zane\PureRouter\Exceptions\RoutePatternException;
 use Zane\PureRouter\Exceptions\RouteResolveActionException;
 use Zane\PureRouter\Exceptions\RouteUrlParameterNotMatchException;
 use Zane\PureRouter\Interfaces\RouteInterface;
+use Zane\PureRouter\Interfaces\RouterInterface;
 use Zane\PureRouter\Parameters\AbstractParameter;
 
 class Route implements RouteInterface
@@ -20,9 +21,9 @@ class Route implements RouteInterface
     const PARAMETER_SEPARATOR = '|';
 
     /**
-     * @var null|ServerRequestInterface
+     * @var null|RouterInterface
      */
-    protected $request = null;
+    protected $router = null;
 
     /**
      * @var string
@@ -59,11 +60,13 @@ class Route implements RouteInterface
      */
     protected $parameters = [];
 
-    public function __construct(array $methods, string $pattern, $action)
+    public function __construct(array $methods, string $pattern, $action, RouterInterface $router)
     {
+        $this->router  = $router;
         $this->methods = $methods;
         $this->pattern = $pattern;
         $this->action  = $action;
+        $this->router  = $router;
     }
 
     /**
@@ -124,7 +127,9 @@ class Route implements RouteInterface
                     throw new RoutePatternException($this->pattern);
                 }
                 // Get parameter and match this uri segment.
-                $parameter = is_null($type) ? Router::getDefaultParameter($name) : Router::getParameter($type, $name);
+                $parameter = is_null($type)
+                    ? $this->router::getDefaultParameter($name)
+                    : $this->router::getParameter($type, $name);
                 // Add parameter to this route.
                 $this->parameters[$name] = $parameter;
                 // Return parameter instance.
@@ -202,7 +207,9 @@ class Route implements RouteInterface
         if (is_null($name)) {
             return $this->name;
         }
+
         $this->name = $name;
+        $this->router->addNamedRoute($name, $this);
 
         return $this;
     }

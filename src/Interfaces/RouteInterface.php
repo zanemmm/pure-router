@@ -3,12 +3,11 @@
 namespace Zane\PureRouter\Interfaces;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Zane\PureRouter\Parameters\AbstractParameter;
 
 interface RouteInterface
 {
-    public function __construct(array $methods, string $pattern, $action);
+    public function __construct(array $methods, string $pattern, $action, RouterInterface $router);
 
     public function match(ServerRequestInterface $request): bool;
 

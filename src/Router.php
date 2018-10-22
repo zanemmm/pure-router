@@ -48,6 +48,11 @@ class Router implements RouterInterface
      */
     protected $currentGroup;
 
+    /**
+     * @var RouteInterface[]
+     */
+    protected $namedRoutes;
+
     public function __construct()
     {
         $this->currentGroup  = new RouteGroup('/');
@@ -56,53 +61,59 @@ class Router implements RouterInterface
 
     public function get(string $pattern, $action): RouteInterface
     {
-        return $this->currentGroup->addRoute(['GET'], $pattern, $action);
+        return $this->match(['GET'], $pattern, $action);
     }
 
     public function post(string $pattern, $action): RouteInterface
     {
-        return $this->currentGroup->addRoute(['POST'], $pattern, $action);
+        return $this->match(['POST'], $pattern, $action);
     }
 
     public function put(string $pattern, $action): RouteInterface
     {
-        return $this->currentGroup->addRoute(['PUT'], $pattern, $action);
+        return $this->match(['PUT'], $pattern, $action);
     }
 
     public function patch(string $pattern, $action): RouteInterface
     {
-        return $this->currentGroup->addRoute(['PATCH'], $pattern, $action);
+        return $this->match(['PATCH'], $pattern, $action);
     }
 
     public function delete(string $pattern, $action): RouteInterface
     {
-        return $this->currentGroup->addRoute(['DELETE'], $pattern, $action);
+        return $this->match(['DELETE'], $pattern, $action);
     }
 
     public function options(string $pattern, $action): RouteInterface
     {
-        return $this->currentGroup->addRoute(['OPTIONS'], $pattern, $action);
+        return $this->match(['OPTIONS'], $pattern, $action);
     }
 
     public function any(string $pattern, $action): RouteInterface
     {
-        return $this->currentGroup->addRoute(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $pattern, $action);
+        return $this->match(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $pattern, $action);
     }
 
     public function match(array $methods, string $pattern, $action): RouteInterface
     {
-        return $this->currentGroup->addRoute($methods, $pattern, $action);
+        return $this->currentGroup->addRoute($methods, $pattern, $action, $this);
     }
 
-    public function group(string $prefix, Closure $fn): RouteGroupInterface
+    public function group(array $info, Closure $fn): RouteGroupInterface
     {
-        $newGroup = new RouteGroup($prefix);
+        $prefix     = $info['prefix'] ?? '/';
+        $namespace  = $info['namespace'] ?? '\\';
+        $middleware = $info['middleware'] ?? [];
+
+        $newGroup = new RouteGroup($prefix, $namespace);
+        $newGroup->middleware($middleware);
+
         $this->routeGroups[] = $newGroup;
 
-        $oldGroup = $this->currentGroup;
+        $defaultGroup = $this->currentGroup;
         $this->currentGroup = $newGroup;
         $fn->call($this, $this);
-        $this->currentGroup = $oldGroup;
+        $this->currentGroup = $defaultGroup;
 
         return $newGroup;
     }
@@ -142,10 +153,14 @@ class Router implements RouterInterface
         return $next;
     }
 
-    public function getRoute(string $name): ?RouteInterface
+    public function getNamedRoute(string $name): ?RouteInterface
     {
-        // TODO: Implement getRoute() method.
-        return null;
+        return $this->namedRoutes[$name] ?? null;
+    }
+
+    public function addNamedRoute(string $name, RouteInterface $route): void
+    {
+        $this->namedRoutes[$name] = $route;
     }
 
     public static function getParameter(string $type, string $name): AbstractParameter
@@ -164,10 +179,14 @@ class Router implements RouterInterface
 
     public static function setDefaultParameter(string $type): void
     {
+        if (!isset(static::$parameters[$type])) {
+            throw new ParameterTypeNotFoundException($type);
+        }
+
         static::$defaultParameter = $type;
     }
 
-    public function setNotFoundResponse(ResponseInterface $response): void
+    public static function setNotFoundResponse(ResponseInterface $response): void
     {
         static::$notFoundResponse = $response;
     }

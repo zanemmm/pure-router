@@ -26,17 +26,21 @@ interface RouterInterface
 
     public function match(array $methods, string $pattern, $action): RouteInterface;
 
-    public function group(string $prefix, Closure $fn): RouteGroupInterface;
+    public function group(array $info, Closure $fn): RouteGroupInterface;
 
     public function dispatch(ServerRequestInterface $request): ?ResponseInterface;
 
-    public function getRoute(string $name): ?RouteInterface;
+    public function getNamedRoute(string $name): ?RouteInterface;
+
+    public function addNamedRoute(string $name, RouteInterface $route): void;
 
     public static function getParameter(string $type, string $name): AbstractParameter;
 
     public static function getDefaultParameter(string $name): AbstractParameter;
 
     public static function setDefaultParameter(string $type): void;
+
+    public static function setNotFoundResponse(ResponseInterface $response): void;
 
     public static function getMiddleware(string $name): MiddlewareInterface;
 

@@ -5,6 +5,7 @@ namespace Zane\Tests;
 use GuzzleHttp\Psr7\ServerRequest;
 use Zane\PureRouter\Route;
 use Zane\PureRouter\RouteGroup;
+use Zane\PureRouter\Router;
 use PHPUnit\Framework\TestCase;
 
 class RouteGroupTest extends TestCase
@@ -21,14 +22,15 @@ class RouteGroupTest extends TestCase
 
     public function testAddRoute()
     {
+        $router = new Router();
         $group = $this->getRouteGroup();
-        $route1 = $group->addRoute(['GET', 'POST'], '/hello', 'world');
-        $route2 = new Route(['GET', 'POST'], '/hello', '/world');
+        $route1 = $group->addRoute(['GET', 'POST'], '/hello', 'world', $router);
+        $route2 = new Route(['GET', 'POST'], '/hello', '\\world', $router);
         $this->assertEquals($route2, $route1);
 
         $group = $this->getRouteGroup('/hello');
-        $route1 = $group->addRoute(['GET'], '/world', 'world');
-        $route2 = new Route(['GET'], 'hello/world', '/world');
+        $route1 = $group->addRoute(['GET'], '/world', 'world', $router);
+        $route2 = new Route(['GET'], 'hello/world', '\\world', $router);
         $this->assertEquals($route2, $route1);
     }
 
@@ -57,23 +59,25 @@ class RouteGroupTest extends TestCase
 
     public function testFindMatchRoute()
     {
+        $router = new Router();
+
         $group = $this->getRouteGroup();
-        $helloRoute = $group->addRoute(['GET', 'POST'], '/hello', 'world');
+        $helloRoute = $group->addRoute(['GET', 'POST'], '/hello', 'world', $router);
         $route = $group->findMatchRoute($this->getRequest('/hello'));
         $this->assertEquals($helloRoute, $route);
 
         $group = $this->getRouteGroup('/hello');
-        $helloRoute = $group->addRoute(['GET'], '/', 'world');
+        $helloRoute = $group->addRoute(['GET'], '/', 'world', $router);
         $route = $group->findMatchRoute($this->getRequest('/hello'));
         $this->assertEquals($helloRoute, $route);
 
         $group = $this->getRouteGroup('/foo');
-        $foobarRoute = $group->addRoute(['GET'], '/bar', 'world');
+        $foobarRoute = $group->addRoute(['GET'], '/bar', 'world', $router);
         $route = $group->findMatchRoute($this->getRequest('foo/bar'));
         $this->assertEquals($foobarRoute, $route);
 
         $group = $this->getRouteGroup('/foo');
-        $group->addRoute(['GET'], '/bar', 'world');
+        $group->addRoute(['GET'], '/bar', 'world', $router);
         $route = $group->findMatchRoute($this->getRequest('foo/bar/hello'));
         $this->assertNull($route);
     }
