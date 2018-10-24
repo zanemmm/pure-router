@@ -18,6 +18,9 @@ use Zane\PureRouter\Parameters\NumberParameter;
 
 class Router implements RouterInterface
 {
+    /**
+     * @var string
+     */
     protected static $defaultParameter = 'any';
 
     /**
@@ -99,6 +102,14 @@ class Router implements RouterInterface
         return $this->currentGroup->addRoute($methods, $pattern, $action, $this);
     }
 
+    /**
+     * Add group to router.
+     *
+     * @param array $info
+     * @param Closure $fn
+     *
+     * @return RouteGroupInterface
+     */
     public function group(array $info, Closure $fn): RouteGroupInterface
     {
         $prefix     = $info['prefix'] ?? '/';
@@ -118,6 +129,15 @@ class Router implements RouterInterface
         return $newGroup;
     }
 
+    /**
+     * Dispatch route for request.
+     *
+     * @param ServerRequestInterface $request
+     *
+     * @return null|ResponseInterface
+     *
+     * @throws MiddlewareNotFoundException
+     */
     public function dispatch(ServerRequestInterface $request): ?ResponseInterface
     {
         foreach ($this->routeGroups as $routeGroup) {
@@ -132,6 +152,16 @@ class Router implements RouterInterface
         return static::$notFoundResponse;
     }
 
+    /**
+     * Resolve middleware of route.
+     *
+     * @param RouteInterface $route
+     * @param RouteGroupInterface $group
+     *
+     * @return RequestHandlerInterface
+     *
+     * @throws MiddlewareNotFoundException
+     */
     protected function resolveMiddleware(RouteInterface $route, RouteGroupInterface $group): RequestHandlerInterface
     {
         $middleware = array_reverse(array_merge($group->middleware(), $route->middleware()));
@@ -153,16 +183,40 @@ class Router implements RouterInterface
         return $next;
     }
 
+    /**
+     * Get route by name.
+     *
+     * @param string $name
+     *
+     * @return null|RouteInterface
+     */
     public function getNamedRoute(string $name): ?RouteInterface
     {
         return $this->namedRoutes[$name] ?? null;
     }
 
+    /**
+     * Set route name.
+     *
+     * @param string $name
+     *
+     * @param RouteInterface $route
+     */
     public function addNamedRoute(string $name, RouteInterface $route): void
     {
         $this->namedRoutes[$name] = $route;
     }
 
+    /**
+     * Get parameter instance by type.
+     *
+     * @param string $type
+     * @param string $name
+     *
+     * @return AbstractParameter
+     *
+     * @throws ParameterTypeNotFoundException
+     */
     public static function getParameter(string $type, string $name): AbstractParameter
     {
         if (!isset(static::$parameters[$type])) {
@@ -172,11 +226,27 @@ class Router implements RouterInterface
         return new static::$parameters[$type]($name);
     }
 
+    /**
+     * Get default parameter.
+     *
+     * @param string $name
+     *
+     * @return AbstractParameter
+     *
+     * @throws ParameterTypeNotFoundException
+     */
     public static function getDefaultParameter(string $name): AbstractParameter
     {
         return static::getParameter(static::$defaultParameter, $name);
     }
 
+    /**
+     * Set default parameter type.
+     *
+     * @param string $type
+     *
+     * @throws ParameterTypeNotFoundException
+     */
     public static function setDefaultParameter(string $type): void
     {
         if (!isset(static::$parameters[$type])) {
@@ -186,11 +256,25 @@ class Router implements RouterInterface
         static::$defaultParameter = $type;
     }
 
+    /**
+     * Set the not found response.
+     *
+     * @param ResponseInterface $response
+     */
     public static function setNotFoundResponse(ResponseInterface $response): void
     {
         static::$notFoundResponse = $response;
     }
 
+    /**
+     * Get middleware instance by name.
+     *
+     * @param string $name
+     *
+     * @return MiddlewareInterface
+     *
+     * @throws MiddlewareNotFoundException
+     */
     public static function getMiddleware(string $name): MiddlewareInterface
     {
         if (!isset(static::$middleware[$name])) {
@@ -200,11 +284,23 @@ class Router implements RouterInterface
         return new static::$middleware[$name]();
     }
 
+    /**
+     * Extend parameter type.
+     *
+     * @param string $type
+     * @param string $parameterClassName
+     */
     public static function extendParameter(string $type, string $parameterClassName): void
     {
         static::$parameters[$type] = $parameterClassName;
     }
 
+    /**
+     * Extend middleware.
+     *
+     * @param string $name
+     * @param string $middlewareClassName
+     */
     public static function extendMiddleware(string $name, string $middlewareClassName): void
     {
         static::$middleware[$name] = $middlewareClassName;

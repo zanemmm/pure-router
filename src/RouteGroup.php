@@ -41,6 +41,16 @@ class RouteGroup implements RouteGroupInterface
         $this->namespace = $namespace;
     }
 
+    /**
+     * Create route instance and add to group.
+     *
+     * @param array $methods
+     * @param string $pattern
+     * @param $action
+     * @param RouterInterface $router
+     *
+     * @return RouteInterface
+     */
     public function addRoute(array $methods, string $pattern, $action, RouterInterface $router): RouteInterface
     {
         $pattern = trim($this->prefix, '/') . '/' . trim($pattern, '/');

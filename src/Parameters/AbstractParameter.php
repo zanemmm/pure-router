@@ -31,6 +31,13 @@ abstract class AbstractParameter
         $this->name = $name;
     }
 
+    /**
+     * Get or set parameter name.
+     *
+     * @param string|null $name
+     *
+     * @return string
+     */
     public function name(string $name = null): string
     {
         if (is_null($name)) {
@@ -42,6 +49,13 @@ abstract class AbstractParameter
         return $this;
     }
 
+    /**
+     * Get the parameter value.
+     *
+     * @param mixed $value
+     *
+     * @return $this|mixed
+     */
     public function value($value = null)
     {
         if (is_null($value)) {
@@ -54,11 +68,18 @@ abstract class AbstractParameter
         }
 
         $this->value = $value;
+        $this->bound = false;
 
         return $this;
     }
 
-    public static function bind(string $name, Closure $fn)
+    /**
+     * Set bind closure for specified parameter.
+     *
+     * @param string $name
+     * @param Closure $fn
+     */
+    public static function bind(string $name, Closure $fn): void
     {
         static::$binds[$name] = $fn;
     }
