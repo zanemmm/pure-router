@@ -16,7 +16,7 @@ class Route implements RouteInterface
 {
     const ACTION_SEPARATOR    = '@';
 
-    const PARAMETER_HEAD      = '$';
+    const PARAMETER_HEAD      = ':';
 
     const PARAMETER_SEPARATOR = '|';
 
@@ -286,7 +286,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * Make the action to ActionHandler.
+     * Try to make other type action implement RequestHandlerInterface.
      *
      * @return ActionHandler
      *
@@ -308,7 +308,8 @@ class Route implements RouteInterface
                 throw new RouteResolveActionException($this->pattern);
             }
 
-            $fn = Closure::fromCallable([new $actionInfo[0], $actionInfo[1]]);
+            [$class, $method] = $actionInfo;
+            $fn = Closure::fromCallable([new $class, $method]);
             $this->action = new ActionHandler($fn, $this);
 
             return $this->action;

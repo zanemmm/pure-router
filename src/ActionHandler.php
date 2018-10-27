@@ -10,13 +10,13 @@ use Zane\PureRouter\Interfaces\RouteInterface;
 
 class ActionHandler implements RequestHandlerInterface
 {
-    protected $action;
+    protected $fn;
 
     protected $route;
 
-    public function __construct(Closure $action, RouteInterface $route)
+    public function __construct(Closure $fn, RouteInterface $route)
     {
-        $this->action = $action;
+        $this->fn = $fn;
         $this->route  = $route;
     }
 
@@ -25,6 +25,6 @@ class ActionHandler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return ($this->action)($request, $this->route);
+        return ($this->fn)($request, $this->route);
     }
 }

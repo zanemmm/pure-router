@@ -38,7 +38,7 @@ abstract class AbstractParameter
      *
      * @return string
      */
-    public function name(string $name = null): string
+    public function name(string $name = null)
     {
         if (is_null($name)) {
             return $this->name;
@@ -60,7 +60,7 @@ abstract class AbstractParameter
     {
         if (is_null($value)) {
             if (isset(static::$binds[$this->name]) && !$this->bound) {
-                $this->value = (static::$binds[$this->name])($value);
+                $this->value = (static::$binds[$this->name])($this->value);
                 $this->bound = true;
             }
 
