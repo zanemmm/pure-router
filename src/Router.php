@@ -13,8 +13,15 @@ use Zane\PureRouter\Interfaces\RouteGroupInterface;
 use Zane\PureRouter\Interfaces\RouteInterface;
 use Zane\PureRouter\Interfaces\RouterInterface;
 use Zane\PureRouter\Parameters\AbstractParameter;
+use Zane\PureRouter\Parameters\AlphaNumberParameter;
+use Zane\PureRouter\Parameters\AlphaParameter;
 use Zane\PureRouter\Parameters\AnyParameter;
+use Zane\PureRouter\Parameters\FirstLowerCharParameter;
+use Zane\PureRouter\Parameters\FirstUpperCharParameter;
+use Zane\PureRouter\Parameters\LowerParameter;
 use Zane\PureRouter\Parameters\NumberParameter;
+use Zane\PureRouter\Parameters\UpperParameter;
+use Zane\PureRouter\Parameters\UpperWordParameter;
 
 class Router implements RouterInterface
 {
@@ -28,7 +35,14 @@ class Router implements RouterInterface
      */
     protected static $parameters = [
         'any' => AnyParameter::class,
+        'alpha' => AlphaParameter::class,
+        'alnum' => AlphaNumberParameter::class,
         'num' => NumberParameter::class,
+        'flc' => FirstLowerCharParameter::class,
+        'fuc' => FirstUpperCharParameter::class,
+        'upper' => UpperParameter::class,
+        'lower' => LowerParameter::class,
+        'uword' => UpperWordParameter::class,
     ];
 
     /**
