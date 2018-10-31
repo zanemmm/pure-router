@@ -3,8 +3,8 @@
 namespace Zane\PureRouter;
 
 use Closure;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zane\PureRouter\Exceptions\MiddlewareNotFoundException;
@@ -34,12 +34,12 @@ class Router implements RouterInterface
      * @var array
      */
     protected static $parameters = [
-        'any' => AnyParameter::class,
+        'any'   => AnyParameter::class,
         'alpha' => AlphaParameter::class,
         'alnum' => AlphaNumberParameter::class,
-        'num' => NumberParameter::class,
-        'flc' => FirstLowerCharParameter::class,
-        'fuc' => FirstUpperCharParameter::class,
+        'num'   => NumberParameter::class,
+        'flc'   => FirstLowerCharParameter::class,
+        'fuc'   => FirstUpperCharParameter::class,
         'upper' => UpperParameter::class,
         'lower' => LowerParameter::class,
         'uword' => UpperWordParameter::class,
@@ -72,7 +72,7 @@ class Router implements RouterInterface
 
     public function __construct()
     {
-        $this->currentGroup  = new RouteGroup('/');
+        $this->currentGroup = new RouteGroup('/');
         $this->routeGroups[] = $this->currentGroup;
     }
 
@@ -119,15 +119,15 @@ class Router implements RouterInterface
     /**
      * Add group to router.
      *
-     * @param array $info
+     * @param array   $info
      * @param Closure $fn
      *
      * @return RouteGroupInterface
      */
     public function group(array $info, Closure $fn): RouteGroupInterface
     {
-        $prefix     = $info['prefix'] ?? '/';
-        $namespace  = $info['namespace'] ?? '\\';
+        $prefix = $info['prefix'] ?? '/';
+        $namespace = $info['namespace'] ?? '\\';
         $middleware = $info['middleware'] ?? [];
 
         $newGroup = new RouteGroup($prefix, $namespace);
@@ -148,9 +148,9 @@ class Router implements RouterInterface
      *
      * @param ServerRequestInterface $request
      *
-     * @return null|ResponseInterface
-     *
      * @throws MiddlewareNotFoundException
+     *
+     * @return null|ResponseInterface
      */
     public function dispatch(ServerRequestInterface $request): ?ResponseInterface
     {
@@ -169,12 +169,12 @@ class Router implements RouterInterface
     /**
      * Resolve middleware of route.
      *
-     * @param RouteInterface $route
+     * @param RouteInterface      $route
      * @param RouteGroupInterface $group
      *
-     * @return RequestHandlerInterface
-     *
      * @throws MiddlewareNotFoundException
+     *
+     * @return RequestHandlerInterface
      */
     protected function resolveMiddleware(RouteInterface $route, RouteGroupInterface $group): RequestHandlerInterface
     {
@@ -212,8 +212,7 @@ class Router implements RouterInterface
     /**
      * Set route name.
      *
-     * @param string $name
-     *
+     * @param string         $name
      * @param RouteInterface $route
      */
     public function addNamedRoute(string $name, RouteInterface $route): void
@@ -227,9 +226,9 @@ class Router implements RouterInterface
      * @param string $type
      * @param string $name
      *
-     * @return AbstractParameter
-     *
      * @throws ParameterTypeNotFoundException
+     *
+     * @return AbstractParameter
      */
     public static function getParameter(string $type, string $name): AbstractParameter
     {
@@ -245,9 +244,9 @@ class Router implements RouterInterface
      *
      * @param string $name
      *
-     * @return AbstractParameter
-     *
      * @throws ParameterTypeNotFoundException
+     *
+     * @return AbstractParameter
      */
     public static function getDefaultParameter(string $name): AbstractParameter
     {
@@ -285,9 +284,9 @@ class Router implements RouterInterface
      *
      * @param string $name
      *
-     * @return MiddlewareInterface
-     *
      * @throws MiddlewareNotFoundException
+     *
+     * @return MiddlewareInterface
      */
     public static function getMiddleware(string $name): MiddlewareInterface
     {

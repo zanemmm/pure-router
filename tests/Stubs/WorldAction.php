@@ -10,7 +10,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class WorldAction implements RequestHandlerInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

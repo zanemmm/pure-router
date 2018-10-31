@@ -7,17 +7,17 @@ use Closure;
 abstract class AbstractParameter
 {
     /**
-     * @var string $name
+     * @var string
      */
     protected $name;
 
     /**
-     * @var mixed $value
+     * @var mixed
      */
     protected $value;
 
     /**
-     * @var bool $bound
+     * @var bool
      */
     protected $bound = false;
 
@@ -76,7 +76,7 @@ abstract class AbstractParameter
     /**
      * Set bind closure for specified parameter.
      *
-     * @param string $name
+     * @param string  $name
      * @param Closure $fn
      */
     public static function bind(string $name, Closure $fn): void

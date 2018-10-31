@@ -3,10 +3,10 @@
 namespace Zane\Tests;
 
 use GuzzleHttp\Psr7\ServerRequest;
+use PHPUnit\Framework\TestCase;
 use Zane\PureRouter\Route;
 use Zane\PureRouter\RouteGroup;
 use Zane\PureRouter\Router;
-use PHPUnit\Framework\TestCase;
 
 class RouteGroupTest extends TestCase
 {

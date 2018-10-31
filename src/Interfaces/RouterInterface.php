@@ -3,10 +3,10 @@
 namespace Zane\PureRouter\Interfaces;
 
 use Closure;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Zane\PureRouter\Parameters\AbstractParameter;
-use Psr\Http\Message\ResponseInterface;
 
 interface RouterInterface
 {

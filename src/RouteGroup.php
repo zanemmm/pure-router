@@ -27,7 +27,7 @@ class RouteGroup implements RouteGroupInterface
         'POST'   => [],
         'PUT'    => [],
         'PATCH'  => [],
-        'DELETE' => []
+        'DELETE' => [],
     ];
 
     /**
@@ -37,14 +37,14 @@ class RouteGroup implements RouteGroupInterface
 
     public function __construct(string $prefix = '/', string $namespace = '\\')
     {
-        $this->prefix    = $prefix;
+        $this->prefix = $prefix;
         $this->namespace = $namespace;
     }
 
     /**
      * Create route instance and add to group.
      *
-     * @param array $methods
+     * @param array  $methods
      * @param string $pattern
      * @param $action
      * @param RouterInterface $router
@@ -53,10 +53,10 @@ class RouteGroup implements RouteGroupInterface
      */
     public function addRoute(array $methods, string $pattern, $action, RouterInterface $router): RouteInterface
     {
-        $pattern = trim($this->prefix, '/') . '/' . trim($pattern, '/');
+        $pattern = trim($this->prefix, '/').'/'.trim($pattern, '/');
 
         if (is_string($action)) {
-            $action = rtrim($this->namespace, '\\') . '\\' . ltrim($action, '\\');
+            $action = rtrim($this->namespace, '\\').'\\'.ltrim($action, '\\');
         }
 
         $route = new Route($methods, $pattern, $action, $router);
@@ -98,8 +98,8 @@ class RouteGroup implements RouteGroupInterface
             return true;
         }
 
-        $prefix = '/' . trim($this->prefix, '/') . '/';
-        $uri    = '/' . trim($request->getUri(), '/') . '/';
+        $prefix = '/'.trim($this->prefix, '/').'/';
+        $uri = '/'.trim($request->getUri(), '/').'/';
 
         if (strpos($uri, $prefix) !== 0) {
             return false;

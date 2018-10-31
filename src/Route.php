@@ -14,9 +14,9 @@ use Zane\PureRouter\Parameters\AbstractParameter;
 
 class Route implements RouteInterface
 {
-    const ACTION_SEPARATOR    = '@';
+    const ACTION_SEPARATOR = '@';
 
-    const PARAMETER_HEAD      = ':';
+    const PARAMETER_HEAD = ':';
 
     const PARAMETER_SEPARATOR = '|';
 
@@ -62,11 +62,11 @@ class Route implements RouteInterface
 
     public function __construct(array $methods, string $pattern, $action, RouterInterface $router)
     {
-        $this->router  = $router;
+        $this->router = $router;
         $this->methods = $methods;
         $this->pattern = $pattern;
-        $this->action  = $action;
-        $this->router  = $router;
+        $this->action = $action;
+        $this->router = $router;
     }
 
     /**
@@ -83,7 +83,7 @@ class Route implements RouteInterface
         }
 
         $patternSegments = $this->segments ?? $this->resolvePattern();
-        $uriSegments     = explode('/', trim($request->getUri(), '/'));
+        $uriSegments = explode('/', trim($request->getUri(), '/'));
         if (count($patternSegments) !== count($uriSegments)) {
             return false;
         }
@@ -96,9 +96,9 @@ class Route implements RouteInterface
     /**
      * Explode pattern to segments and parse pattern parameters.
      *
-     * @return array
-     *
      * @throws
+     *
+     * @return array
      */
     protected function resolvePattern(): array
     {
@@ -189,10 +189,11 @@ class Route implements RouteInterface
 
                 return $value;
             }
+
             return $segment;
         }, $segments);
 
-        return '/' . implode('/', $segments);
+        return '/'.implode('/', $segments);
     }
 
     /**
@@ -260,15 +261,14 @@ class Route implements RouteInterface
         return $this;
     }
 
-
     /**
      * Get or set action.
      *
      * @param null|string|RequestHandlerInterface $action
      *
-     * @return $this|RequestHandlerInterface
-     *
      * @throws RouteResolveActionException
+     *
+     * @return $this|RequestHandlerInterface
      */
     public function action($action = null)
     {
@@ -288,9 +288,9 @@ class Route implements RouteInterface
     /**
      * Try to make other type action implement RequestHandlerInterface.
      *
-     * @return ActionHandler
-     *
      * @throws RouteResolveActionException
+     *
+     * @return ActionHandler
      */
     protected function resolveAction(): ActionHandler
     {
@@ -309,7 +309,7 @@ class Route implements RouteInterface
             }
 
             [$class, $method] = $actionInfo;
-            $fn = Closure::fromCallable([new $class, $method]);
+            $fn = Closure::fromCallable([new $class(), $method]);
             $this->action = new ActionHandler($fn, $this);
 
             return $this->action;

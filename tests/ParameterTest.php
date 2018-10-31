@@ -2,10 +2,10 @@
 
 namespace Zane\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Zane\PureRouter\Parameters\AlphaNumberParameter;
 use Zane\PureRouter\Parameters\AlphaParameter;
 use Zane\PureRouter\Parameters\AnyParameter;
-use PHPUnit\Framework\TestCase;
 use Zane\PureRouter\Parameters\FirstLowerCharParameter;
 use Zane\PureRouter\Parameters\FirstUpperCharParameter;
 use Zane\PureRouter\Parameters\LowerParameter;
@@ -23,14 +23,14 @@ class ParameterTest extends TestCase
 
         // test bind
         AnyParameter::bind('foo', function ($value) {
-            return $value . ' world';
+            return $value.' world';
         });
         $this->assertEquals('hello world', $any->value());
         $any->value('bye');
         $this->assertEquals('bye world', $any->value());
 
         AnyParameter::bind('foo', function ($value) {
-            return $value . ' other';
+            return $value.' other';
         });
         $any->value('test');
         $this->assertEquals('test other', $any->value());
