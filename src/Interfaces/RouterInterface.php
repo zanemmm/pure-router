@@ -40,7 +40,7 @@ interface RouterInterface
 
     public static function setDefaultParameter(string $type): void;
 
-    public static function setNotFoundResponse(ResponseInterface $response): void;
+    public static function setNotFoundResponse(?ResponseInterface $response): void;
 
     public static function getMiddleware(string $name): MiddlewareInterface;
 

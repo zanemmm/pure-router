@@ -273,9 +273,9 @@ class Router implements RouterInterface
     /**
      * Set the not found response.
      *
-     * @param ResponseInterface $response
+     * @param null|ResponseInterface $response
      */
-    public static function setNotFoundResponse(ResponseInterface $response): void
+    public static function setNotFoundResponse(?ResponseInterface $response): void
     {
         static::$notFoundResponse = $response;
     }
