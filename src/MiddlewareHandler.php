@@ -19,11 +19,11 @@ class MiddlewareHandler implements RequestHandlerInterface
     public function __construct(MiddlewareInterface $middleware, RequestHandlerInterface $next)
     {
         $this->middleware = $middleware;
-        $this->next       = $next;
+        $this->next = $next;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

@@ -11,11 +11,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 class WorldMiddleware implements MiddlewareInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);
-        return new Response(200, [], $response->getBody()->getContents() . ',world');
+
+        return new Response(200, [], $response->getBody()->getContents().',world');
     }
 }

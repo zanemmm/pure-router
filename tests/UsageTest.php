@@ -26,7 +26,7 @@ class UsageTest extends TestCase
     public function testSimpleUsage()
     {
         Router::setDefaultParameter('any');
-        Router::setNotFoundResponse(new Response(404, [], "404 NOT FOUND!"));
+        Router::setNotFoundResponse(new Response(404, [], '404 NOT FOUND!'));
         $router = new Router();
 
         $router->get('hello', function (ServerRequestInterface $request) {

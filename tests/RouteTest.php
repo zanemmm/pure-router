@@ -1,4 +1,5 @@
 <?php
+
 namespace Zane\Tests;
 
 use GuzzleHttp\Psr7\ServerRequest;
@@ -73,55 +74,55 @@ class RouteTest extends TestCase
 
     public function testMatch()
     {
-        $route   = $this->getRoute('/');
+        $route = $this->getRoute('/');
         $request = $this->getRequest('/');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('/');
+        $route = $this->getRoute('/');
         $request = $this->getRequest('');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('');
+        $route = $this->getRoute('');
         $request = $this->getRequest('/');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('');
+        $route = $this->getRoute('');
         $request = $this->getRequest('');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('/hello');
+        $route = $this->getRoute('/hello');
         $request = $this->getRequest('/hello');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('hello/');
+        $route = $this->getRoute('hello/');
         $request = $this->getRequest('/hello');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('/hello');
+        $route = $this->getRoute('/hello');
         $request = $this->getRequest('hello/');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('hello');
+        $route = $this->getRoute('hello');
         $request = $this->getRequest('hello');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('/hello/world');
+        $route = $this->getRoute('/hello/world');
         $request = $this->getRequest('/hello/world');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('/hello');
+        $route = $this->getRoute('/hello');
         $request = $this->getRequest('/hello', 'POST');
         $this->assertFalse($route->match($request));
 
-        $route   = $this->getRoute('/hello');
+        $route = $this->getRoute('/hello');
         $request = $this->getRequest('/world');
         $this->assertFalse($route->match($request));
 
-        $route   = $this->getRoute('/hello');
+        $route = $this->getRoute('/hello');
         $request = $this->getRequest('/hello/world');
         $this->assertFalse($route->match($request));
 
-        $route   = $this->getRoute('/hello/world');
+        $route = $this->getRoute('/hello/world');
         $request = $this->getRequest('/world');
         $this->assertFalse($route->match($request));
     }
@@ -131,7 +132,7 @@ class RouteTest extends TestCase
      */
     public function testMatchWrongParameterPattern()
     {
-        $route   = $this->getRoute('/hello/:');
+        $route = $this->getRoute('/hello/:');
         $request = $this->getRequest('/hello/world');
         $route->match($request);
     }
@@ -141,22 +142,22 @@ class RouteTest extends TestCase
      */
     public function testMatchWrongUriPattern()
     {
-        $route   = $this->getRoute('/hello//world');
+        $route = $this->getRoute('/hello//world');
         $request = $this->getRequest('/hello/world');
         $route->match($request);
     }
 
     public function testMatchWithParameter()
     {
-        $route   = $this->getRoute('/:test/world');
+        $route = $this->getRoute('/:test/world');
         $request = $this->getRequest('/hello/world');
         $this->assertTrue($route->match($request));
 
-        $route   = $this->getRoute('/:id|num/world');
+        $route = $this->getRoute('/:id|num/world');
         $request = $this->getRequest('/hello/world');
         $this->assertFalse($route->match($request));
 
-        $route   = $this->getRoute('/:id|num/:name|any');
+        $route = $this->getRoute('/:id|num/:name|any');
         $request = $this->getRequest('/9527/panda');
         $this->assertTrue($route->match($request));
 
@@ -176,7 +177,6 @@ class RouteTest extends TestCase
 
         $this->assertEquals('9527', $parameters['id']->value());
         $this->assertEquals('panda', $parameters['name']->value());
-
 
         $parameters = $route->getParameters(['id']);
         $this->assertInstanceOf(NumberParameter::class, $parameters['id']);
@@ -213,7 +213,7 @@ class RouteTest extends TestCase
      */
     public function testGet()
     {
-        $route   = $this->getRoute('/:id|num/:name|any');
+        $route = $this->getRoute('/:id|num/:name|any');
         $request = $this->getRequest('/9527/panda');
         $route->match($request);
 

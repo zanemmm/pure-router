@@ -13,11 +13,10 @@ use Zane\PureRouter\Router;
 
 class ActionHandlerTest extends TestCase
 {
-
     public function testHandle()
     {
         $fn = function (ServerRequestInterface $request, RouteInterface $route) {
-            return new Response(200, [], $request->getUri() . $route->url());
+            return new Response(200, [], $request->getUri().$route->url());
         };
         $route = new Route(['GET'], 'world', $fn, new Router());
         $request = new ServerRequest('GET', 'hello');

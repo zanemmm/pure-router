@@ -17,11 +17,11 @@ class ActionHandler implements RequestHandlerInterface
     public function __construct(Closure $fn, RouteInterface $route)
     {
         $this->fn = $fn;
-        $this->route  = $route;
+        $this->route = $route;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

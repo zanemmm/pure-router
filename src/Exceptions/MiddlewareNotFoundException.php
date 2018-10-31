@@ -7,7 +7,7 @@ use Throwable;
 
 class MiddlewareNotFoundException extends Exception
 {
-    public function __construct(string $middlewareName = "", int $code = 0, Throwable $previous = null)
+    public function __construct(string $middlewareName = '', int $code = 0, Throwable $previous = null)
     {
         $message = "Middleware <$middlewareName> not found.";
 

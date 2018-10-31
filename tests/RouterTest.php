@@ -4,12 +4,12 @@ namespace Zane\Tests;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
+use PHPUnit\Framework\TestCase;
 use Zane\PureRouter\Interfaces\RouterInterface;
 use Zane\PureRouter\Parameters\AnyParameter;
 use Zane\PureRouter\Parameters\NumberParameter;
 use Zane\PureRouter\RouteGroup;
 use Zane\PureRouter\Router;
-use PHPUnit\Framework\TestCase;
 use Zane\Tests\Stubs\HelloAction;
 use Zane\Tests\Stubs\HelloMiddleware;
 use Zane\Tests\Stubs\WorldMiddleware;
@@ -24,11 +24,11 @@ class RouterTest extends TestCase
 
         $router->get('/', new HelloAction())->middleware(['hello', 'world']);
         $response = $router->dispatch(new ServerRequest('GET', '/'));
-        $this->assertEquals("hello,world,hello", $response->getBody()->getContents());
+        $this->assertEquals('hello,world,hello', $response->getBody()->getContents());
 
         $router->post('/hello', new HelloAction());
         $response = $router->dispatch(new ServerRequest('POST', '/hello'));
-        $this->assertEquals("hello", $response->getBody()->getContents());
+        $this->assertEquals('hello', $response->getBody()->getContents());
 
         $response = $router->dispatch(new ServerRequest('POST', '/world'));
         $this->assertNull($response);
