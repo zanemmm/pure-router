@@ -36,7 +36,7 @@ abstract class AbstractParameter
      *
      * @param string|null $name
      *
-     * @return string
+     * @return string|AbstractParameter
      */
     public function name(string $name = null)
     {

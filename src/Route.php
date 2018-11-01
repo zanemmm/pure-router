@@ -21,9 +21,9 @@ class Route implements RouteInterface
     const PARAMETER_SEPARATOR = '|';
 
     /**
-     * @var null|RouterInterface
+     * @var RouterInterface
      */
-    protected $router = null;
+    protected $router;
 
     /**
      * @var string
@@ -46,7 +46,7 @@ class Route implements RouteInterface
     protected $segments;
 
     /**
-     * @var RequestHandlerInterface
+     * @var RequestHandlerInterface|callable|string
      */
     protected $action;
 
@@ -62,7 +62,6 @@ class Route implements RouteInterface
 
     public function __construct(array $methods, string $pattern, $action, RouterInterface $router)
     {
-        $this->router = $router;
         $this->methods = $methods;
         $this->pattern = $pattern;
         $this->action = $action;
@@ -218,25 +217,22 @@ class Route implements RouteInterface
     /**
      * Get parameter value.
      *
-     * @param string|string[] $names
+     * @param string[]|string $names
      *
-     * @return AbstractParameter|AbstractParameter[]
+     * @return AbstractParameter[]|AbstractParameter|null
      */
     public function get($names = [])
     {
-        if (is_string($names)) {
-            return $this->getParameter($names)->value();
-        }
-
         if (!is_array($names)) {
-            return [];
+            $parameter = $this->getParameter((string) $names);
+            if ($parameter instanceof AbstractParameter) {
+                return $parameter->value();
+            }
+
+            return $parameter;
         }
 
-        if (empty($names)) {
-            $parameters = $this->parameters;
-        } else {
-            $parameters = $this->getParameters($names);
-        }
+        $parameters = $this->getParameters($names);
 
         return array_map(function (AbstractParameter $parameter) {
             return $parameter->value();

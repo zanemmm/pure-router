@@ -128,7 +128,7 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @expectedException Zane\PureRouter\Exceptions\RoutePatternException
+     * @expectedException \Zane\PureRouter\Exceptions\RoutePatternException
      */
     public function testMatchWrongParameterPattern()
     {
@@ -138,7 +138,7 @@ class RouteTest extends TestCase
     }
 
     /**
-     * @expectedException Zane\PureRouter\Exceptions\RoutePatternException
+     * @expectedException \Zane\PureRouter\Exceptions\RoutePatternException
      */
     public function testMatchWrongUriPattern()
     {
@@ -222,7 +222,13 @@ class RouteTest extends TestCase
         $this->assertEquals(['id' => '9527', 'name' => 'panda'], $route->get(['id', 'name']));
         $this->assertEquals(['id' => '9527', 'name' => 'panda'], $route->get(['id', 'name', 'ghost']));
 
+        $this->assertEmpty($route->get('9527'));
         $this->assertEmpty($route->get(9527));
+
+        $route = $this->getRoute('/:6159/panda');
+        $route->match($request);
+        $this->assertEquals('9527', $route->get('6159'));
+        $this->assertEquals('9527', $route->get(6159));
     }
 
     public function testName()
