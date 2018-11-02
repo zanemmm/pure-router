@@ -270,7 +270,7 @@ class RouteTest extends TestCase
         $this->assertInstanceOf(ActionHandler::class, $callableRoute->action());
 
         // test string action
-        $stringRoute = $this->getRoute('/', 'GET', 'Zane\Tests\Stubs\TestController@index');
+        $stringRoute = $this->getRoute('/', 'GET', 'Zane\\Tests\\Stubs\\TestController@index');
         $this->assertInstanceOf(ActionHandler::class, $stringRoute->action());
     }
 

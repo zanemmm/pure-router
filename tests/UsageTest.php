@@ -7,6 +7,7 @@ use GuzzleHttp\Psr7\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Zane\PureRouter\Interfaces\RouteInterface;
+use Zane\PureRouter\Interfaces\RouterInterface;
 use Zane\PureRouter\Router;
 use Zane\Tests\Stubs\WorldAction;
 
@@ -37,6 +38,8 @@ class UsageTest extends TestCase
             return new Response(200, [], $route->get('name'));
         });
 
+        $router->get(':to/girl', 'Zane\\Tests\\Stubs\\TestController@index')->name('myLove');
+
         $router->post('world', new WorldAction());
 
         $response = $router->dispatch($this->getRequest('GET', '/hello'));
@@ -47,5 +50,41 @@ class UsageTest extends TestCase
 
         $response = $router->dispatch($this->getRequest('POST', '/world'));
         $this->assertEquals('world', $response->getBody()->getContents());
+
+        $response = $router->dispatch($this->getRequest('GET', 'kiss/girl'));
+        $this->assertEquals('kiss/girl|myLove', $response->getBody()->getContents());
+
+        $response = $router->dispatch($this->getRequest('GET', 'undefined'));
+        $this->assertEquals(404, $response->getStatusCode());
+    }
+
+    public function testGroupUsage()
+    {
+        $router = new Router();
+
+        $router->group(['prefix' => 'foo',  'namespace' => 'Zane\\Tests\\Stubs'], function (RouterInterface $router) {
+            $router->get('foo', '\\TestController@index')->name('foo');
+            $router->get('bar', 'TestController@index')->name('bar');
+        });
+        $router->group(['prefix' => 'bar'], function (RouterInterface $router) {
+            $router->get('foo', function () {
+                return new Response(200, [], 'second group');
+            });
+        });
+        $router->get('root', function () {
+            return new Response(200, [], 'default group');
+        });
+
+        $response = $router->dispatch($this->getRequest('GET', 'foo/foo'));
+        $this->assertEquals('foo/foo|foo', $response->getBody()->getContents());
+
+        $response = $router->dispatch($this->getRequest('GET', 'foo/bar'));
+        $this->assertEquals('foo/bar|bar', $response->getBody()->getContents());
+
+        $response = $router->dispatch($this->getRequest('GET', 'bar/foo'));
+        $this->assertEquals('second group', $response->getBody()->getContents());
+
+        $response = $router->dispatch($this->getRequest('GET', 'root'));
+        $this->assertEquals('default group', $response->getBody()->getContents());
     }
 }
